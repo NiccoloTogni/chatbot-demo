@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanilla LLM — demo didattica</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-soft: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --user-bubble: #2563eb;
+      --assistant-bubble: #334155;
+      --warning: #fbbf24;
+      --error: #ef4444;
+      --border: #475569;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    /* Header con badge "vanilla" e info modello */
+    header {
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: var(--warning);
+      color: #422006;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Pannello collassabile con system prompt e config */
+    .config {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .config summary {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      user-select: none;
+      list-style: none;
+    }
+
+    .config summary::before {
+      content: "▶ ";
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+
+    .config[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .config-body {
+      padding: 0 16px 16px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    .config-body pre {
+      background: #0a0f1d;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      color: var(--text);
+      font-size: 12px;
+      margin: 8px 0;
+      white-space: pre-wrap;
+    }
+
+    .config-body strong {
+      color: var(--text);
+    }
+
+    /* Bottoni con prompt killer */
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 0 0 0;
+    }
+
+    .examples button {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .examples button:hover {
+      background: rgba(56, 189, 248, 0.3);
+    }
+
+    /* Conversazione */
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .empty-state {
+      margin: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 420px;
+    }
+
+    .empty-state h2 {
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user .bubble {
+      background: var(--user-bubble);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant .bubble {
+      background: var(--assistant-bubble);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      padding: 0 6px;
+    }
+
+    /* Input area */
+    .composer {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .composer textarea {
+      flex: 1;
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+      min-height: 40px;
+      max-height: 200px;
+    }
+
+    .composer textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .composer button {
+      background: var(--accent);
+      color: #0a0f1d;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .composer button:hover:not(:disabled) {
+      background: #7dd3fc;
+    }
+
+    .composer button:disabled {
+      background: var(--panel-soft);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .composer button.secondary {
+      background: var(--panel-soft);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .composer button.secondary:hover:not(:disabled) {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    /* Banner errori e info */
+    .banner {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .banner.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .banner.info {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    /* Indicatore "sto pensando" */
+    .typing {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    /* Schermata password */
+    .auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 16px;
+    }
+
+    .auth-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .auth-card h2 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+    }
+
+    .auth-card p {
+      margin: 0 0 20px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .auth-card input {
+      width: 100%;
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .auth-card input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .auth-card button {
+      width: 100%;
+      background: var(--accent);
+      color: #0a0f1d;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Schermata password (mostrata se ACCESS_TOKEN è settato) -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <h2>Accesso demo</h2>
+      <p>Inserisci la password fornita dal docente per accedere alla demo.</p>
+      <input type="password" id="auth-input" placeholder="Password" autocomplete="off" />
+      <button id="auth-button">Entra</button>
+      <div id="auth-error" class="banner error hidden" style="margin-top: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- App principale -->
+  <div id="app" class="app hidden">
+
+    <header>
+      <h1>
+        🤖 Vanilla LLM
+        <span class="badge">Senza tool</span>
+      </h1>
+      <p>
+        Chat con un modello linguistico "puro": nessuna ricerca web, nessuna calcolatrice,
+        nessun accesso a documenti. La conversazione resta finché tieni la tab aperta —
+        chiudere la tab cancella tutto.
+      </p>
+    </header>
+
+    <details class="config">
+      <summary>Configurazione (system prompt, modello, limiti)</summary>
+      <div class="config-body">
+        <p><strong>Modello deployato:</strong> <span id="cfg-model">—</span></p>
+        <p><strong>Limite output per turno:</strong> <span id="cfg-max-out">—</span> token</p>
+        <p><strong>Limite cronologia:</strong> <span id="cfg-max-hist">—</span> messaggi</p>
+        <p><strong>System prompt usato in ogni chiamata:</strong></p>
+        <pre id="cfg-prompt">—</pre>
+
+        <p style="margin-top: 16px;"><strong>Prompt suggeriti per testare i limiti:</strong></p>
+        <div class="examples">
+          <button data-prompt="Quante R ci sono nella parola STRAWBERRY?">🍓 Conta le R</button>
+          <button data-prompt="9.11 è maggiore di 9.9?">🔢 9.11 vs 9.9</button>
+          <button data-prompt="Chi ha scritto il romanzo 'Le ombre del lago di Iseo' di Marcello Tarvisio?">📚 Libro inventato</button>
+          <button data-prompt="Quanto fa 47 × 89 + 234 / 7? Mostra i passaggi.">🧮 Calcolo lungo</button>
+          <button data-prompt="Quali sono le tre sentenze più importanti della Cassazione del 2023 sul diritto del lavoro? Indica numero e data.">⚖️ Sentenze inventate</button>
+          <button data-prompt="Cosa è successo nelle ultime 24 ore nel mondo della politica italiana?">📅 Eventi recenti</button>
+          <button data-prompt="Chi è [aggiungi qui un nome di tua conoscenza non famoso]?">👤 Persona poco nota</button>
+        </div>
+      </div>
+    </details>
+
+    <div id="error-banner" class="banner error hidden"></div>
+
+    <div id="chat" class="chat">
+      <div class="empty-state">
+        <h2>Conversazione vuota</h2>
+        <p>
+          Scrivi un messaggio o usa uno dei prompt suggeriti nel pannello sopra
+          per vedere come risponde un LLM senza alcun aiuto esterno.
+        </p>
+      </div>
+    </div>
+
+    <div class="composer">
+      <textarea
+        id="input"
+        placeholder="Scrivi il tuo messaggio... (Invio per inviare, Shift+Invio per andare a capo)"
+        rows="1"
+      ></textarea>
+      <button id="reset" class="secondary" title="Cancella conversazione">↺ Reset</button>
+      <button id="send">Invia</button>
+    </div>
+
+  </div>
+
+  <script>
+    // ========================================================================
+    // STATO — la cronologia vive in sessionStorage:
+    //   - sopravvive al refresh della pagina
+    //   - viene cancellata quando si chiude la tab/finestra del browser
+    //   - non è persistente tra sessioni (niente localStorage)
+    // Il backend resta stateless: la cronologia viene rispedita ad ogni POST.
+    // ========================================================================
+
+    const STORAGE_KEY = 'vanilla-llm-demo:messages';
+
+    const state = {
+      messages: loadMessagesFromStorage(),  // [{role, content, meta?}]
+      busy: false,
+      token: loadTokenFromStorage(),        // password runtime, se richiesta
+      authRequired: false,
+    };
+
+    function loadMessagesFromStorage() {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveMessagesToStorage() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state.messages));
+      } catch {
+        // sessionStorage potrebbe essere disabilitato (modalità privata strict);
+        // in tal caso lo stato resta solo in memoria — accettabile.
+      }
+    }
+
+    function clearMessagesFromStorage() {
+      try { sessionStorage.removeItem(STORAGE_KEY); } catch {}
+    }
+
+    function loadTokenFromStorage() {
+      try { return sessionStorage.getItem(STORAGE_KEY + ':token'); }
+      catch { return null; }
+    }
+
+    function saveTokenToStorage(token) {
+      try { sessionStorage.setItem(STORAGE_KEY + ':token', token); } catch {}
+    }
+
+    function clearTokenFromStorage() {
+      try { sessionStorage.removeItem(STORAGE_KEY + ':token'); } catch {}
+    }
+
+    // ========================================================================
+    // Riferimenti DOM
+    // ========================================================================
+
+    const els = {
+      app: document.getElementById('app'),
+      authScreen: document.getElementById('auth-screen'),
+      authInput: document.getElementById('auth-input'),
+      authButton: document.getElementById('auth-button'),
+      authError: document.getElementById('auth-error'),
+      chat: document.getElementById('chat'),
+      input: document.getElementById('input'),
+      send: document.getElementById('send'),
+      reset: document.getElementById('reset'),
+      errorBanner: document.getElementById('error-banner'),
+      cfgModel: document.getElementById('cfg-model'),
+      cfgPrompt: document.getElementById('cfg-prompt'),
+      cfgMaxOut: document.getElementById('cfg-max-out'),
+      cfgMaxHist: document.getElementById('cfg-max-hist'),
+    };
+
+    // ========================================================================
+    // API
+    // ========================================================================
+
+    async function apiCall(path, opts = {}) {
+      const headers = { 'Content-Type': 'application/json', ...opts.headers };
+      if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+
+      const res = await fetch(path, { ...opts, headers });
+
+      if (res.status === 401) {
+        state.authRequired = true;
+        showAuthScreen();
+        throw new Error('Password richiesta');
+      }
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({ detail: 'Errore sconosciuto' }));
+        throw new Error(errBody.detail || `Errore HTTP ${res.status}`);
+      }
+      return res.json();
+    }
+
+    async function loadConfig() {
+      try {
+        const cfg = await apiCall('/api/config');
+        els.cfgModel.textContent = cfg.model_deployment;
+        els.cfgPrompt.textContent = cfg.system_prompt;
+        els.cfgMaxOut.textContent = cfg.max_output_tokens;
+        els.cfgMaxHist.textContent = cfg.max_history_messages;
+      } catch (e) {
+        // Se è 401 viene già gestito, qui cattura solo per non far esplodere l'app
+        if (!state.authRequired) {
+          showError(`Impossibile caricare la configurazione: ${e.message}`);
+        }
+      }
+    }
+
+    async function sendMessage(userText) {
+      if (state.busy) return;
+      const text = userText.trim();
+      if (!text) return;
+
+      state.busy = true;
+      els.send.disabled = true;
+      hideError();
+
+      // Aggiungo subito il messaggio utente alla UI
+      state.messages.push({ role: 'user', content: text });
+      saveMessagesToStorage();
+      renderChat();
+
+      // Placeholder "sto pensando"
+      const typingEl = document.createElement('div');
+      typingEl.className = 'typing';
+      typingEl.textContent = 'Il modello sta rispondendo…';
+      els.chat.appendChild(typingEl);
+      els.chat.scrollTop = els.chat.scrollHeight;
+
+      try {
+        // Invio TUTTA la cronologia al server: il server è stateless
+        const payload = {
+          messages: state.messages.map(m => ({ role: m.role, content: m.content })),
+        };
+        const resp = await apiCall('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+
+        state.messages.push({
+          role: 'assistant',
+          content: resp.reply,
+          meta: {
+            promptTokens: resp.prompt_tokens,
+            completionTokens: resp.completion_tokens,
+            totalTokens: resp.total_tokens,
+            model: resp.model,
+          },
+        });
+        saveMessagesToStorage();
+      } catch (e) {
+        showError(`Errore: ${e.message}`);
+        // rimuovo il messaggio utente per permettere di ritentare
+        state.messages.pop();
+        saveMessagesToStorage();
+      } finally {
+        typingEl.remove();
+        state.busy = false;
+        els.send.disabled = false;
+        renderChat();
+      }
+    }
+
+    function resetConversation() {
+      if (state.busy) return;
+      if (state.messages.length === 0) return;
+      if (!confirm('Cancellare tutta la conversazione?')) return;
+      state.messages = [];
+      clearMessagesFromStorage();
+      hideError();
+      renderChat();
+    }
+
+    // ========================================================================
+    // Rendering
+    // ========================================================================
+
+    function renderChat() {
+      els.chat.innerHTML = '';
+
+      if (state.messages.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = `
+          <h2>Conversazione vuota</h2>
+          <p>Scrivi un messaggio o usa uno dei prompt suggeriti nel pannello sopra
+          per vedere come risponde un LLM senza alcun aiuto esterno.</p>
+        `;
+        els.chat.appendChild(empty);
+        return;
+      }
+
+      for (const msg of state.messages) {
+        const wrap = document.createElement('div');
+        wrap.className = `message ${msg.role}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = msg.content;
+        wrap.appendChild(bubble);
+
+        if (msg.meta) {
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = `${msg.meta.totalTokens} token totali · ${msg.meta.promptTokens} input + ${msg.meta.completionTokens} output`;
+          wrap.appendChild(meta);
+        }
+
+        els.chat.appendChild(wrap);
+      }
+
+      els.chat.scrollTop = els.chat.scrollHeight;
+    }
+
+    function showError(msg) {
+      els.errorBanner.textContent = msg;
+      els.errorBanner.classList.remove('hidden');
+    }
+
+    function hideError() {
+      els.errorBanner.classList.add('hidden');
+    }
+
+    function showAuthScreen() {
+      els.app.classList.add('hidden');
+      els.authScreen.classList.remove('hidden');
+      els.authInput.focus();
+    }
+
+    function showApp() {
+      els.authScreen.classList.add('hidden');
+      els.app.classList.remove('hidden');
+      els.input.focus();
+    }
+
+    // ========================================================================
+    // Event listeners
+    // ========================================================================
+
+    els.send.addEventListener('click', () => {
+      sendMessage(els.input.value);
+      els.input.value = '';
+      autoResize();
+    });
+
+    els.reset.addEventListener('click', resetConversation);
+
+    els.input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        els.send.click();
+      }
+    });
+
+    els.input.addEventListener('input', autoResize);
+
+    function autoResize() {
+      els.input.style.height = 'auto';
+      els.input.style.height = Math.min(els.input.scrollHeight, 200) + 'px';
+    }
+
+    // Esempi pre-cotti: clic = compila il textarea
+    document.querySelectorAll('.examples button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        els.input.value = btn.dataset.prompt;
+        els.input.focus();
+        autoResize();
+      });
+    });
+
+    // Auth
+    els.authButton.addEventListener('click', async () => {
+      const pwd = els.authInput.value.trim();
+      if (!pwd) return;
+      state.token = pwd;
+      els.authError.classList.add('hidden');
+      try {
+        await loadConfig();
+        saveTokenToStorage(pwd);
+        showApp();
+      } catch (e) {
+        state.token = null;
+        clearTokenFromStorage();
+        els.authError.textContent = 'Password errata o problema di connessione.';
+        els.authError.classList.remove('hidden');
+      }
+    });
+
+    els.authInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') els.authButton.click();
+    });
+
+    // ========================================================================
+    // Boot
+    // ========================================================================
+
+    (async function init() {
+      // Provo a chiamare /api/config: se ho già un token in storage lo uso,
+      // altrimenti la chiamata sarà senza token. Se 401, mostro la schermata
+      // password. Se 200, mostro l'app (con eventuale cronologia recuperata).
+      try {
+        await loadConfig();
+        renderChat();   // disegna eventuale cronologia ripresa da sessionStorage
+        showApp();
+      } catch (e) {
+        if (state.authRequired) {
+          // token salvato ma scaduto/cambiato: lo rimuovo
+          clearTokenFromStorage();
+          state.token = null;
+          // showAuthScreen è già stato chiamato in apiCall
+        } else {
+          showError(`Errore di avvio: ${e.message}`);
+          showApp(); // mostro comunque l'app per vedere l'errore
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
