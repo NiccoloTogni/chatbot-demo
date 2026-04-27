@@ -204,14 +204,31 @@ def chat(
         openai_messages.append({"role": msg.role, "content": msg.content})
 
     try:
-        response = client.chat.completions.create(
-            model=AZURE_OPENAI_DEPLOYMENT,
-            messages=openai_messages,
-            max_tokens=MAX_OUTPUT_TOKENS,
-            temperature=0.7,
-            # Nessun tool. Nessuna funzione. Nessuna ricerca.
-            tools=None,
-        )
+        # Alcuni modelli (reasoning: o1, o3, o5, gpt-5) richiedono
+        # `max_completion_tokens` invece di `max_tokens` e non accettano
+        # `temperature` diversa dal default. Proviamo prima il dialetto
+        # nuovo, ricadiamo sul vecchio se il modello lo supporta solo lui.
+        try:
+            response = client.chat.completions.create(
+                model=AZURE_OPENAI_DEPLOYMENT,
+                messages=openai_messages,
+                max_completion_tokens=MAX_OUTPUT_TOKENS,
+                # Nessun tool. Nessuna funzione. Nessuna ricerca.
+                tools=None,
+            )
+        except OpenAIError as new_dialect_error:
+            err_str = str(new_dialect_error).lower()
+            if "max_completion_tokens" in err_str or "unsupported" in err_str:
+                # Modello classico (gpt-4o-mini, gpt-35-turbo, ecc.)
+                response = client.chat.completions.create(
+                    model=AZURE_OPENAI_DEPLOYMENT,
+                    messages=openai_messages,
+                    max_tokens=MAX_OUTPUT_TOKENS,
+                    temperature=0.7,
+                    tools=None,
+                )
+            else:
+                raise
     except OpenAIError as exc:
         raise HTTPException(
             status_code=502,
