@@ -507,7 +507,10 @@ def step3_charts(session_id: str):
     if not session["kpis"]:
         raise HTTPException(status_code=400, detail="Eseguire prima step 2.")
 
-    paths = _generate_charts(session_id, session["extracted_data"], session["kpis"])
+    try:
+        paths = _generate_charts(session_id, session["extracted_data"], session["kpis"])
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Errore generazione grafici: {exc}") from exc
     session["chart_paths"] = paths
 
     return {
