@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vanilla LLM — demo didattica</title>
+  <title>Strumenti AI — Demo Didattica</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -479,8 +479,8 @@
 
     <header>
       <h1>
-        🤖 Vanilla LLM
-        <span class="badge">Demo didattica</span>
+        Strumenti AI
+        <span class="badge">Demo Didattica</span>
       </h1>
       <p>
         Chat con Azure OpenAI in due modalità: <strong>Vanilla</strong> (LLM puro, nessun accesso a dati aziendali)
@@ -505,24 +505,28 @@
         <p><strong>Modello deployato:</strong> <span id="cfg-model">—</span></p>
         <p><strong>Limite output per turno:</strong> <span id="cfg-max-out">—</span> token</p>
         <p><strong>Limite cronologia:</strong> <span id="cfg-max-hist">—</span> messaggi</p>
-        <p><strong>System prompt (modalità Vanilla):</strong></p>
+        <p><strong>System prompt attivo:</strong></p>
         <pre id="cfg-prompt">—</pre>
 
-        <p style="margin-top: 16px;"><strong>Prompt suggeriti per testare i limiti del Vanilla:</strong></p>
-        <div class="examples">
-          <button data-prompt="Riportami il testo dell'articolo 47-bis del Codice Civile italiano.">📜 Articolo 47-bis</button>
-          <button data-prompt="Riassumi le conclusioni dello studio di Rossi e Bianchi (2024), 'Mechanical fatigue of recycled polypropylene composites', pubblicato sul Journal of Polymer Engineering.">📚 Studio inventato</button>
-          <button data-prompt="Riassumi i contenuti principali della norma UNI EN ISO 14855-3:2023 sulla biodegradabilità dei polimeri tecnici in ambiente industriale controllato. Indica i parametri di test e le soglie di accettazione.">📐 Norma UNI</button>
-          <button data-prompt="Secondo il rapporto Plastics Europe 2024, qual è la percentuale esatta di polipropilene riciclato utilizzato nell'industria del packaging alimentare in Italia? Riporta anche il trend rispetto al 2023.">📊 Plastics Europe 2024</button>
-          <button data-prompt="Una pala eolica ruota a velocità costante di 18 giri al minuto. Quante rotazioni complete avrà compiuto dopo 7 minuti e 25 secondi? Mostra il calcolo.">🌬️ Pala eolica</button>
+        <div id="examples-vanilla">
+          <p style="margin-top: 16px;"><strong>Prompt suggeriti per testare i limiti del Vanilla:</strong></p>
+          <div class="examples">
+            <button data-prompt="Riportami il testo dell'articolo 47-bis del Codice Civile italiano.">📜 Articolo 47-bis</button>
+            <button data-prompt="Riassumi le conclusioni dello studio di Rossi e Bianchi (2024), 'Mechanical fatigue of recycled polypropylene composites', pubblicato sul Journal of Polymer Engineering.">📚 Studio inventato</button>
+            <button data-prompt="Riassumi i contenuti principali della norma UNI EN ISO 14855-3:2023 sulla biodegradabilità dei polimeri tecnici in ambiente industriale controllato. Indica i parametri di test e le soglie di accettazione.">📐 Norma UNI</button>
+            <button data-prompt="Secondo il rapporto Plastics Europe 2024, qual è la percentuale esatta di polipropilene riciclato utilizzato nell'industria del packaging alimentare in Italia? Riporta anche il trend rispetto al 2023.">📊 Plastics Europe 2024</button>
+            <button data-prompt="Una pala eolica ruota a velocità costante di 18 giri al minuto. Quante rotazioni complete avrà compiuto dopo 7 minuti e 25 secondi? Mostra il calcolo.">🌬️ Pala eolica</button>
+          </div>
         </div>
 
-        <p style="margin-top: 16px;"><strong>Prompt suggeriti per il RAG (documenti aziendali):</strong></p>
-        <div class="examples">
-          <button data-prompt="Qual è la procedura per gestire una non conformità fornitore?">📋 Non conformità fornitore</button>
-          <button data-prompt="Quali materiali sono approvati per componenti a contatto con alimenti?">🧪 Materiali approvati</button>
-          <button data-prompt="Cosa è stato deciso nell'ultima riunione qualità riguardo ai fornitori in ritardo?">📅 Riunione qualità</button>
-          <button data-prompt="Quanto posso spendere per una cena in trasferta a Milano?">🍽️ Rimborso trasferta</button>
+        <div id="examples-rag" class="hidden">
+          <p style="margin-top: 16px;"><strong>Prompt suggeriti per il RAG (documenti aziendali):</strong></p>
+          <div class="examples">
+            <button data-prompt="Qual è la procedura per gestire una non conformità fornitore?">📋 Non conformità fornitore</button>
+            <button data-prompt="Quali materiali sono approvati per componenti a contatto con alimenti?">🧪 Materiali approvati</button>
+            <button data-prompt="Cosa è stato deciso nell'ultima riunione qualità riguardo ai fornitori in ritardo?">📅 Riunione qualità</button>
+            <button data-prompt="Quanto posso spendere per una cena in trasferta a Milano?">🍽️ Rimborso trasferta</button>
+          </div>
         </div>
       </div>
     </details>
@@ -639,7 +643,12 @@
       cfgMaxHist: document.getElementById('cfg-max-hist'),
       tabVanilla: document.getElementById('tab-vanilla'),
       tabRag: document.getElementById('tab-rag'),
+      examplesVanilla: document.getElementById('examples-vanilla'),
+      examplesRag: document.getElementById('examples-rag'),
     };
+
+    // Prompts cached after loadConfig — used to update the panel on tab switch
+    const prompts = { vanilla: '—', rag: '—' };
 
     // ========================================================================
     // API
@@ -667,9 +676,11 @@
       try {
         const cfg = await apiCall('/api/config');
         els.cfgModel.textContent = cfg.model_deployment;
-        els.cfgPrompt.textContent = cfg.system_prompt;
         els.cfgMaxOut.textContent = cfg.max_output_tokens;
         els.cfgMaxHist.textContent = cfg.max_history_messages;
+        prompts.vanilla = cfg.system_prompt;
+        prompts.rag = cfg.rag_system_prompt;
+        els.cfgPrompt.textContent = prompts[state.mode];
       } catch (e) {
         if (!state.authRequired) {
           showError(`Impossibile caricare la configurazione: ${e.message}`);
@@ -826,9 +837,13 @@
     }
 
     function updateTabUI() {
-      els.tabVanilla.classList.toggle('active', state.mode === 'vanilla');
-      els.tabRag.classList.toggle('active', state.mode === 'rag');
-      els.ragIndicator.classList.toggle('hidden', state.mode !== 'rag');
+      const isRag = state.mode === 'rag';
+      els.tabVanilla.classList.toggle('active', !isRag);
+      els.tabRag.classList.toggle('active', isRag);
+      els.ragIndicator.classList.toggle('hidden', !isRag);
+      els.cfgPrompt.textContent = prompts[state.mode];
+      els.examplesVanilla.classList.toggle('hidden', isRag);
+      els.examplesRag.classList.toggle('hidden', !isRag);
     }
 
     function showError(msg) {

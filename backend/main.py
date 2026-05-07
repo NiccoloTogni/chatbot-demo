@@ -190,6 +190,7 @@ class ConfigResponse(BaseModel):
 
     model_deployment: str
     system_prompt: str
+    rag_system_prompt: str
     max_output_tokens: int
     max_history_messages: int
 
@@ -210,6 +211,7 @@ def get_config(_: None = Depends(verify_access)) -> ConfigResponse:
     return ConfigResponse(
         model_deployment=AZURE_OPENAI_DEPLOYMENT,
         system_prompt=SYSTEM_PROMPT,
+        rag_system_prompt=RAG_SYSTEM_PROMPT,
         max_output_tokens=MAX_OUTPUT_TOKENS,
         max_history_messages=MAX_HISTORY_MESSAGES,
     )
