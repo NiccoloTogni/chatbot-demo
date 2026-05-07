@@ -187,7 +187,7 @@ async def upload_pdf(file: UploadFile = File(...)):
     try:
         uploaded = client.files.create(
             file=(filename, content, "application/pdf"),
-            purpose="user_data",
+            purpose="assistants",
         )
     except OpenAIError as exc:
         raise HTTPException(status_code=502, detail=f"Errore upload: {exc}") from exc
