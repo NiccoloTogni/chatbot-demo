@@ -419,8 +419,7 @@ def _generate_charts(session_id: str, data: dict, kpis: dict) -> list[str]:
         "axes.spines.top": False,
         "axes.spines.right": False,
         "axes.grid": True,
-        "grid.axis": "y",
-        "grid.alpha": 0.4,
+        "axes.grid.axis": "y",
     })
 
     paths = []
