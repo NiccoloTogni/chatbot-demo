@@ -27,6 +27,8 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
+from backend.agent_bilancio import router as agent_router
+
 # ---------------------------------------------------------------------------
 # Configurazione
 # ---------------------------------------------------------------------------
@@ -78,6 +80,7 @@ app = FastAPI(
 )
 
 app.state.limiter = limiter
+app.include_router(agent_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # dietro password, ok per uso didattico

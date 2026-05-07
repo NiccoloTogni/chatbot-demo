@@ -458,6 +458,172 @@
       cursor: pointer;
     }
 
+    /* Agent tab color */
+    .tab.active[data-mode="agent"] {
+      background: rgba(251, 191, 36, 0.15);
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+
+    /* Agent panel */
+    .agent-panel {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .upload-zone {
+      background: var(--panel);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 32px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .upload-zone.drag-over {
+      border-color: var(--warning);
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    .upload-zone.has-file {
+      border-style: solid;
+      border-color: var(--warning);
+    }
+
+    .upload-icon { font-size: 36px; margin-bottom: 10px; }
+
+    .upload-label {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 12px 0;
+    }
+
+    .upload-btn {
+      background: var(--warning);
+      color: #422006;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .upload-btn:hover { background: #fcd34d; }
+
+    .upload-filename {
+      margin: 10px 0 0 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .agent-actions { display: flex; gap: 8px; }
+
+    .agent-start-btn {
+      background: var(--warning);
+      color: #422006;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .agent-start-btn:hover:not(:disabled) { background: #fcd34d; }
+
+    .agent-start-btn:disabled {
+      background: var(--panel-soft);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .download-btn {
+      background: #1a6b1a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .download-btn:hover { background: #228b22; }
+
+    /* Step checklist */
+    .step-list {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-item:last-child { border-bottom: none; }
+
+    .step-icon {
+      font-size: 18px;
+      min-width: 22px;
+      text-align: center;
+      padding-top: 1px;
+    }
+
+    .step-content { flex: 1; }
+
+    .step-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .step-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .step-summary {
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .step-detail {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      padding-left: 4px;
+    }
+
+    .step-item.completed .step-name { color: #4ade80; }
+    .step-item.running .step-name   { color: var(--accent); }
+    .step-item.error .step-name     { color: var(--error); }
+    .step-item.error .step-summary  { color: var(--error); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--panel-soft);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -483,8 +649,8 @@
         <span class="badge">Demo Didattica</span>
       </h1>
       <p>
-        Chat con Azure OpenAI in due modalità: <strong>Vanilla</strong> (LLM puro, nessun accesso a dati aziendali)
-        e <strong>Assistente RAG</strong> (risposte basate sui documenti aziendali con citazioni alle fonti).
+        Tre modalità a confronto: <strong>Vanilla</strong> (LLM puro), <strong>Assistente RAG</strong>
+        (knowledge base aziendale con citazioni), <strong>Agente Bilancio</strong> (workflow AI multi-step su PDF).
       </p>
     </header>
 
@@ -492,6 +658,7 @@
     <div class="tabs">
       <button class="tab active" data-mode="vanilla" id="tab-vanilla">🤖 Vanilla LLM</button>
       <button class="tab" data-mode="rag" id="tab-rag">🔍 Assistente RAG</button>
+      <button class="tab" data-mode="agent" id="tab-agent">📊 Agente Bilancio</button>
     </div>
 
     <!-- Indicatore modalità RAG -->
@@ -499,7 +666,7 @@
       🔍 <strong>Modalità RAG attiva</strong> — risposte basate sui documenti aziendali caricati nella knowledge base
     </div>
 
-    <details class="config">
+    <details class="config" id="config-panel">
       <summary>Configurazione (system prompt, modello, limiti)</summary>
       <div class="config-body">
         <p><strong>Modello deployato:</strong> <span id="cfg-model">—</span></p>
@@ -533,6 +700,30 @@
 
     <div id="error-banner" class="banner error hidden"></div>
 
+    <!-- Pannello Agente Bilancio (visibile solo in modalità agent) -->
+    <div id="agent-panel" class="agent-panel hidden">
+
+      <div id="upload-zone" class="upload-zone">
+        <div class="upload-icon">📄</div>
+        <p class="upload-label">Trascina qui il PDF del bilancio, oppure</p>
+        <button class="upload-btn" id="upload-trigger">Scegli file</button>
+        <input type="file" id="file-input" accept=".pdf" style="display:none">
+        <p id="upload-filename" class="upload-filename hidden"></p>
+      </div>
+
+      <div class="agent-actions">
+        <button class="agent-start-btn hidden" id="agent-start" disabled>▶ Avvia analisi</button>
+        <button class="secondary hidden" id="agent-reset" style="border-radius:8px;padding:10px 18px;font-size:14px;cursor:pointer;background:var(--panel-soft);color:var(--muted);border:1px solid var(--border);">↺ Nuova analisi</button>
+      </div>
+
+      <div id="step-list" class="step-list hidden"></div>
+
+      <div id="agent-download" class="hidden">
+        <button class="download-btn" id="download-btn">📥 Scarica report PDF</button>
+      </div>
+
+    </div>
+
     <div id="chat" class="chat">
       <div class="empty-state">
         <h2>Conversazione vuota</h2>
@@ -543,7 +734,7 @@
       </div>
     </div>
 
-    <div class="composer">
+    <div class="composer" id="composer">
       <textarea
         id="input"
         placeholder="Scrivi il tuo messaggio… (Invio per inviare, Shift+Invio per andare a capo)"
@@ -565,10 +756,23 @@
     const state = {
       vanillaMessages: [],   // [{role, content, meta?}]
       ragMessages: [],       // [{role, content, citations?, meta?}]
-      mode: 'vanilla',       // 'vanilla' | 'rag'
+      mode: 'vanilla',       // 'vanilla' | 'rag' | 'agent'
       busy: false,
       token: loadTokenFromStorage(),
       authRequired: false,
+    };
+
+    const STEP_DEFS = [
+      { name: 'Estrazione dati',        desc: 'Lettura e strutturazione del bilancio tramite AI' },
+      { name: 'Calcolo KPI',            desc: 'Margini, variazioni, indicatori finanziari' },
+      { name: 'Generazione grafici',    desc: 'Trend ricavi/EBITDA, marginalità, struttura finanziaria' },
+      { name: 'Analisi e report',       desc: 'Commento AI e composizione PDF scaricabile' },
+    ];
+
+    const agentState = {
+      sessionId: null,
+      downloadUrl: null,
+      steps: STEP_DEFS.map(() => ({ status: 'waiting', summary: '', details: [] })),
     };
 
     // Compatibilità con sessioni precedenti che usavano la chiave flat
@@ -632,6 +836,8 @@
       authButton: document.getElementById('auth-button'),
       authError: document.getElementById('auth-error'),
       chat: document.getElementById('chat'),
+      composer: document.getElementById('composer'),
+      configPanel: document.getElementById('config-panel'),
       input: document.getElementById('input'),
       send: document.getElementById('send'),
       reset: document.getElementById('reset'),
@@ -643,8 +849,20 @@
       cfgMaxHist: document.getElementById('cfg-max-hist'),
       tabVanilla: document.getElementById('tab-vanilla'),
       tabRag: document.getElementById('tab-rag'),
+      tabAgent: document.getElementById('tab-agent'),
       examplesVanilla: document.getElementById('examples-vanilla'),
       examplesRag: document.getElementById('examples-rag'),
+      // Agent panel
+      agentPanel: document.getElementById('agent-panel'),
+      uploadZone: document.getElementById('upload-zone'),
+      uploadTrigger: document.getElementById('upload-trigger'),
+      fileInput: document.getElementById('file-input'),
+      uploadFilename: document.getElementById('upload-filename'),
+      agentStart: document.getElementById('agent-start'),
+      agentReset: document.getElementById('agent-reset'),
+      stepList: document.getElementById('step-list'),
+      agentDownload: document.getElementById('agent-download'),
+      downloadBtn: document.getElementById('download-btn'),
     };
 
     // Prompts cached after loadConfig — used to update the panel on tab switch
@@ -837,13 +1055,29 @@
     }
 
     function updateTabUI() {
-      const isRag = state.mode === 'rag';
-      els.tabVanilla.classList.toggle('active', !isRag);
+      const isVanilla = state.mode === 'vanilla';
+      const isRag     = state.mode === 'rag';
+      const isAgent   = state.mode === 'agent';
+
+      els.tabVanilla.classList.toggle('active', isVanilla);
       els.tabRag.classList.toggle('active', isRag);
+      els.tabAgent.classList.toggle('active', isAgent);
+
+      // Aree esclusive per chat vs agente
+      els.chat.classList.toggle('hidden', isAgent);
+      els.composer.classList.toggle('hidden', isAgent);
+      els.configPanel.classList.toggle('hidden', isAgent);
+      els.agentPanel.classList.toggle('hidden', !isAgent);
+
+      // RAG indicator solo nella tab RAG
       els.ragIndicator.classList.toggle('hidden', !isRag);
-      els.cfgPrompt.textContent = prompts[state.mode];
-      els.examplesVanilla.classList.toggle('hidden', isRag);
-      els.examplesRag.classList.toggle('hidden', !isRag);
+
+      // Prompt e esempi (solo per le tab chat)
+      if (!isAgent) {
+        els.cfgPrompt.textContent = prompts[state.mode] || '—';
+        els.examplesVanilla.classList.toggle('hidden', isRag);
+        els.examplesRag.classList.toggle('hidden', !isRag);
+      }
     }
 
     function showError(msg) {
@@ -865,6 +1099,164 @@
       els.authScreen.classList.add('hidden');
       els.app.classList.remove('hidden');
       els.input.focus();
+    }
+
+    // ========================================================================
+    // Agent Bilancio
+    // ========================================================================
+
+    function renderStepList() {
+      els.stepList.innerHTML = '';
+      agentState.steps.forEach((step, i) => {
+        const item = document.createElement('div');
+        item.className = `step-item ${step.status}`;
+
+        let iconHtml;
+        if      (step.status === 'waiting')   iconHtml = '<span style="color:var(--muted);font-size:16px">⏸</span>';
+        else if (step.status === 'running')   iconHtml = '<div class="spinner"></div>';
+        else if (step.status === 'completed') iconHtml = '<span style="color:#4ade80;font-weight:700">✓</span>';
+        else                                  iconHtml = '<span style="color:var(--error);font-weight:700">✗</span>';
+
+        let extraHtml = '';
+        if (step.summary) extraHtml += `<div class="step-summary">${step.summary}</div>`;
+        (step.details || []).forEach(d => {
+          extraHtml += `<div class="step-detail">• ${d}</div>`;
+        });
+
+        item.innerHTML = `
+          <div class="step-icon">${iconHtml}</div>
+          <div class="step-content">
+            <div class="step-name">Step ${i + 1} · ${STEP_DEFS[i].name}</div>
+            <div class="step-desc">${STEP_DEFS[i].desc}</div>
+            ${extraHtml}
+          </div>`;
+        els.stepList.appendChild(item);
+      });
+    }
+
+    function resetAgentUI() {
+      agentState.sessionId = null;
+      agentState.downloadUrl = null;
+      agentState.steps = STEP_DEFS.map(() => ({ status: 'waiting', summary: '', details: [] }));
+      els.uploadZone.classList.remove('has-file');
+      els.uploadFilename.classList.add('hidden');
+      els.fileInput.value = '';
+      els.agentStart.classList.add('hidden');
+      els.agentStart.disabled = true;
+      els.agentReset.classList.add('hidden');
+      els.stepList.classList.add('hidden');
+      els.agentDownload.classList.add('hidden');
+      els.uploadZone.style.pointerEvents = '';
+    }
+
+    async function uploadFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const headers = {};
+      if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+      const res = await fetch('/api/agent/upload', { method: 'POST', headers, body: formData });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: 'Errore sconosciuto' }));
+        throw new Error(err.detail || `HTTP ${res.status}`);
+      }
+      return res.json();
+    }
+
+    async function runAgentWorkflow() {
+      els.agentStart.disabled = true;
+      els.uploadZone.style.pointerEvents = 'none';
+      agentState.steps = STEP_DEFS.map(() => ({ status: 'waiting', summary: '', details: [] }));
+      agentState.downloadUrl = null;
+      els.agentDownload.classList.add('hidden');
+      els.agentReset.classList.add('hidden');
+      els.stepList.classList.remove('hidden');
+      renderStepList();
+
+      // Upload
+      try {
+        const up = await uploadFile(els.fileInput.files[0]);
+        agentState.sessionId = up.session_id;
+      } catch (e) {
+        agentState.steps[0].status = 'error';
+        agentState.steps[0].summary = `Errore upload: ${e.message}`;
+        renderStepList();
+        els.agentStart.disabled = false;
+        els.agentReset.classList.remove('hidden');
+        els.uploadZone.style.pointerEvents = '';
+        return;
+      }
+
+      // Step 1–4
+      for (let i = 0; i < 4; i++) {
+        agentState.steps[i].status = 'running';
+        agentState.steps[i].summary = 'In corso…';
+        renderStepList();
+        try {
+          const result = await apiCall(
+            `/api/agent/step${i + 1}?session_id=${agentState.sessionId}`,
+            { method: 'POST' },
+          );
+          agentState.steps[i].status = 'completed';
+          agentState.steps[i].summary = result.summary || '';
+          agentState.steps[i].details = result.details || [];
+          if (result.download_url) agentState.downloadUrl = result.download_url;
+          renderStepList();
+        } catch (e) {
+          agentState.steps[i].status = 'error';
+          agentState.steps[i].summary = e.message;
+          renderStepList();
+          els.agentReset.classList.remove('hidden');
+          els.uploadZone.style.pointerEvents = '';
+          return;
+        }
+      }
+
+      if (agentState.downloadUrl) els.agentDownload.classList.remove('hidden');
+      els.agentReset.classList.remove('hidden');
+    }
+
+    function setupAgentPanel() {
+      // File input via button click
+      els.uploadTrigger.addEventListener('click', () => els.fileInput.click());
+      els.uploadZone.addEventListener('click', (e) => {
+        if (e.target !== els.uploadTrigger) els.fileInput.click();
+      });
+
+      // File selection
+      els.fileInput.addEventListener('change', () => {
+        const file = els.fileInput.files[0];
+        if (!file) return;
+        els.uploadFilename.textContent = `📄 ${file.name}`;
+        els.uploadFilename.classList.remove('hidden');
+        els.uploadZone.classList.add('has-file');
+        els.agentStart.classList.remove('hidden');
+        els.agentStart.disabled = false;
+      });
+
+      // Drag & drop
+      els.uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        els.uploadZone.classList.add('drag-over');
+      });
+      els.uploadZone.addEventListener('dragleave', () => els.uploadZone.classList.remove('drag-over'));
+      els.uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        els.uploadZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        els.fileInput.files = dt.files;
+        els.fileInput.dispatchEvent(new Event('change'));
+      });
+
+      els.agentStart.addEventListener('click', runAgentWorkflow);
+
+      els.agentReset.addEventListener('click', resetAgentUI);
+
+      els.downloadBtn.addEventListener('click', () => {
+        if (agentState.downloadUrl) window.location.href = agentState.downloadUrl;
+      });
     }
 
     // ========================================================================
@@ -942,6 +1334,7 @@
 
     (async function init() {
       loadMessagesFromStorage();
+      setupAgentPanel();
       try {
         await loadConfig();
         updateTabUI();
