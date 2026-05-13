@@ -61,7 +61,7 @@ L'utente aggiungerà manualmente queste App Settings nel portale Azure dopo il s
 Creare `scripts/setup_vector_store.py` che:
 
 1. Si connette ad Azure OpenAI usando le stesse env vars del vanilla
-2. Crea un vector store chiamato `baldan-knowledge-base`
+2. Crea un vector store chiamato `rossi-knowledge-base`
 3. Carica tutti i PDF dalla directory `data/knowledge_base/` usando il batch helper (`vector_stores.file_batches.upload_and_poll`)
 4. Stampa il `vector_store_id` con un messaggio chiaro tipo:
    ```

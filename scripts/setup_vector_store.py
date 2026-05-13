@@ -21,7 +21,7 @@ API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION_RESPONSES", "2025-04-01-preview")
 
 KNOWLEDGE_BASE_DIR = Path(__file__).parent.parent / "data" / "knowledge_base"
-VECTOR_STORE_NAME = "baldan-knowledge-base"
+VECTOR_STORE_NAME = "rossi-knowledge-base"
 
 
 def main() -> None:

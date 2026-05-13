@@ -1,5 +1,5 @@
 """
-Script one-off per creare il vector store baldan-preventivi-kb su Azure OpenAI.
+Script one-off per creare il vector store rossi-preventivi-kb su Azure OpenAI.
 
 ATTENZIONE: ogni esecuzione crea un NUOVO vector store. Vecchi da eliminare
 manualmente dal portale Azure prima di rieseguire.
@@ -19,7 +19,7 @@ API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION_RESPONSES", "2025-04-01-preview")
 
 KNOWLEDGE_BASE_DIR = Path(__file__).parent.parent / "data" / "knowledge_base"
-VECTOR_STORE_NAME = "baldan-preventivi-kb"
+VECTOR_STORE_NAME = "rossi-preventivi-kb"
 TARGET_FILES = {"ST-MAT-01_Materiali_Approvati.pdf", "IO-PROD-07_Stampaggio_Iniezione.pdf"}
 
 

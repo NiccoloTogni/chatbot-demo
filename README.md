@@ -71,9 +71,9 @@ Dal portale Azure:
 2. Compila i campi:
    - **Subscription**: la tua
    - **Resource Group**: usa lo stesso della risorsa Azure OpenAI (consigliato),
-     oppure creane uno nuovo (es. `rg-corso-ai-baldan`)
+     oppure creane uno nuovo (es. `rg-corso-ai-rossi`)
    - **Name**: nome univoco globalmente, sarà parte dell'URL
-     (es. `baldan-vanilla-llm` → `https://baldan-vanilla-llm.azurewebsites.net`)
+     (es. `rossi-vanilla-llm` → `https://rossi-vanilla-llm.azurewebsites.net`)
    - **Publish**: `Code` (non Container)
    - **Runtime stack**: `Python 3.12`
    - **Operating System**: `Linux`
@@ -99,7 +99,7 @@ Una volta creata l'App Service:
 | `AZURE_OPENAI_API_KEY` | la tua API key Azure OpenAI |
 | `AZURE_OPENAI_API_VERSION` | `2024-08-01-preview` |
 | `AZURE_OPENAI_DEPLOYMENT` | nome del deployment (es. `gpt-4o-mini`) |
-| `ACCESS_TOKEN` | password per gli studenti (es. `corso-baldan-2026`) |
+| `ACCESS_TOKEN` | password per gli studenti (es. `corso-rossi-2026`) |
 | `MAX_OUTPUT_TOKENS` | `800` |
 | `MAX_HISTORY_MESSAGES` | `30` |
 | `RATE_LIMIT` | `30/minute` |

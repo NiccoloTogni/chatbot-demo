@@ -2,7 +2,7 @@
 Agente Preventivi — conversazione AI multi-turno + costificazione deterministica.
 
 Pattern ibrido:
-- Fase conversazionale: Responses API con file_search su baldan-preventivi-kb
+- Fase conversazionale: Responses API con file_search su rossi-preventivi-kb
 - Costificazione: Python puro deterministico (calcola_preventivo)
 - PDF: reportlab, stile coerente con agent_bilancio
 """
@@ -78,7 +78,7 @@ except FileNotFoundError as e:
 _AGENT_SYSTEM_PROMPT = """\
 ## RUOLO E IDENTITÀ
 
-Sei l'agente preventivi di Baldan Plastica SRL, azienda mantovana di stampaggio plastica a iniezione attiva dal 1965. Aiuti i commerciali a costruire offerte tecnico-economiche per richieste cliente.
+Sei l'agente preventivi di Rossi Plastica SRL, azienda mantovana di stampaggio plastica a iniezione attiva dal 1965. Aiuti i commerciali a costruire offerte tecnico-economiche per richieste cliente.
 
 Il tuo tono è quello di un commerciale senior con 15 anni di esperienza in azienda: cortese, competente, diretto. Dai del Lei nel primo messaggio, poi adatti al tono del tuo interlocutore. Non sei una segretaria che raccoglie dati — sei un consulente che ragiona insieme al cliente.
 
@@ -148,9 +148,9 @@ Regola di pulizia: non chiedere mai contemporaneamente più di 3 campi.
 
 ## USO DELLA KNOWLEDGE BASE (file_search)
 
-Hai accesso al tool file_search su un vector store dedicato contenente la documentazione tecnica interna Baldan: materiali approvati (ST-MAT-01) e istruzione operativa stampaggio iniezione (IO-PROD-07).
+Hai accesso al tool file_search su un vector store dedicato contenente la documentazione tecnica interna Rossi: materiali approvati (ST-MAT-01) e istruzione operativa stampaggio iniezione (IO-PROD-07).
 
-Usalo quando: il cliente chiede se Baldan lavora un materiale specifico, chiede di certificazioni o procedure di qualità, menziona requisiti speciali coperti dalle procedure interne.
+Usalo quando: il cliente chiede se Rossi lavora un materiale specifico, chiede di certificazioni o procedure di qualità, menziona requisiti speciali coperti dalle procedure interne.
 Non usarlo per: domande sui prezzi, tempi macchina, raccolta requisiti generica.
 
 Cita sempre la fonte se hai usato file_search: "Secondo la nostra istruzione operativa IO-PROD-07, [...]".
@@ -187,7 +187,7 @@ E imposti ready_to_generate: true.\
 """
 
 _COMMENT_SYSTEM = """\
-Sei un commerciale senior di Baldan Plastica. Devi scrivere un breve testo
+Sei un commerciale senior di Rossi Plastica. Devi scrivere un breve testo
 introduttivo (3-4 frasi, massimo 80 parole) da inserire all'inizio di un
 preventivo tecnico. Tono professionale ma cordiale, in italiano. Menziona
 specificamente il pezzo richiesto e l'applicazione, ringraziando per la
@@ -465,7 +465,7 @@ def calcola_preventivo(requirements: dict) -> dict:
     esclusioni = REGOLE_PRICING.get("esclusioni_standard", [])
 
     return {
-        "azienda_offerente": "Baldan Plastica SRL",
+        "azienda_offerente": "Rossi Plastica SRL",
         "data_offerta": date.today().isoformat(),
         "validita_giorni": condizioni.get("validita_offerta_giorni", 30),
         "requisiti": dict(requirements),
@@ -614,7 +614,7 @@ def _build_pdf(session_id: str, preventivo_data: dict) -> str:
     story.append(Spacer(1, 0.5 * cm))
     story.append(Paragraph(str(req.get("tipologia_pezzo", "—")), s_sub))
     story.append(Spacer(1, 1 * cm))
-    story.append(Paragraph("Offerente: Baldan Plastica SRL", s_body))
+    story.append(Paragraph("Offerente: Rossi Plastica SRL", s_body))
     story.append(Paragraph("Cliente: [da definire]", s_body))
     story.append(Paragraph(f"Data offerta: {preventivo_data.get('data_offerta', '—')}", s_body))
     story.append(Paragraph(f"Validità: {preventivo_data.get('validita_giorni', 30)} giorni", s_body))
@@ -822,7 +822,7 @@ class GenerateRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 _OPENING_MESSAGE = (
-    "Buongiorno, sono l'agente preventivi di Baldan Plastica. "
+    "Buongiorno, sono l'agente preventivi di Rossi Plastica. "
     "Sono qui per aiutarLa a costruire una prima quotazione per la Sua richiesta. "
     "Mi può descrivere brevemente il pezzo che il Vostro cliente Vi ha chiesto?"
 )
