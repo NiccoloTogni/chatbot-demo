@@ -1,0 +1,63 @@
+{
+  "_meta": {
+    "descrizione": "Regole di pricing applicate al costo industriale per arrivare al prezzo di vendita al cliente. Include markup, sconti volume, maggiorazioni, condizioni standard.",
+    "ultima_revisione": "2026-01-15"
+  },
+  "markup": {
+    "descrizione": "Maggiorazione percentuale applicata al costo industriale (materiale + macchina + lavorazioni). Copre overhead aziendale, controllo qualità, packaging, margine commerciale.",
+    "valore_default": 0.22,
+    "range_negoziabile": [0.15, 0.30],
+    "note": "Markup più alto per pezzi tecnici a basso volume, più basso per commodities ad alto volume. Per clienti strategici si può scendere al 15%."
+  },
+  "scarto_produttivo": {
+    "descrizione": "Maggiorazione sul costo materiale per scarti di stampaggio, materozze, pezzi non conformi.",
+    "valore_percentuale": 0.05,
+    "note": "Lo scarto effettivo varia per pezzo. Il 5% è una media prudenziale già spalmata."
+  },
+  "sconti_volume": {
+    "descrizione": "Sconto percentuale sul prezzo pezzo in base al volume annuo concordato. Si applica al volume contrattuale, non a quello effettivamente prodotto.",
+    "fasce": [
+      {"volume_annuo_da": 0,      "volume_annuo_a": 10000,    "sconto": 0.00, "label": "Standard"},
+      {"volume_annuo_da": 10000,  "volume_annuo_a": 50000,    "sconto": 0.03, "label": "Sconto base"},
+      {"volume_annuo_da": 50000,  "volume_annuo_a": 200000,   "sconto": 0.07, "label": "Sconto medio volume"},
+      {"volume_annuo_da": 200000, "volume_annuo_a": 500000,   "sconto": 0.12, "label": "Sconto alto volume"},
+      {"volume_annuo_da": 500000, "volume_annuo_a": 99999999, "sconto": 0.16, "label": "Sconto volumi industriali"}
+    ]
+  },
+  "maggiorazioni": {
+    "descrizione": "Maggiorazioni applicate in situazioni particolari",
+    "urgenza_consegna": {
+      "consegna_oltre_60_giorni": 0.00,
+      "consegna_30_60_giorni": 0.05,
+      "consegna_15_30_giorni": 0.12,
+      "consegna_sotto_15_giorni": 0.20,
+      "note": "La maggiorazione si applica al prezzo pezzo per la prima fornitura. Forniture successive a regime standard."
+    },
+    "materiale_critico": {
+      "valore_percentuale": 0.05,
+      "descrizione": "Maggiorazione su materiali igroscopici o abrasivi (PA, PA66-GF30) per usura macchina e gestione stoccaggio aggiuntivo"
+    },
+    "qualita_certificata": {
+      "valore_percentuale": 0.08,
+      "descrizione": "Per certificazioni richieste oltre lo standard ISO 9001 — es. IATF 16949 automotive, ISO 13485 medicale"
+    }
+  },
+  "condizioni_commerciali_standard": {
+    "validita_offerta_giorni": 30,
+    "termini_pagamento": "60 giorni data fattura fine mese",
+    "modalita_pagamento": "Bonifico bancario",
+    "tempo_consegna_stampo": "Vedi costi_stampi.json",
+    "tempo_consegna_prima_serie": "4-6 settimane dal collaudo stampo",
+    "tempo_consegna_serie_successive": "3-5 settimane dall'ordine",
+    "garanzia_pezzo": "Pezzi conformi alle specifiche concordate. Tolleranza generale UNI ISO 20457 medio-fine salvo diversa indicazione",
+    "imballaggio": "Standard: scatole cartone su pallet EPAL. Imballaggi customizzati preventivati a parte",
+    "luogo_resa": "Franco fabbrica Mantova (EXW Incoterms 2020), salvo diverso accordo"
+  },
+  "esclusioni_standard": [
+    "Trasporto e assicurazione merce",
+    "Dazi e oneri doganali per export extra-UE",
+    "Modifiche stampo post-collaudo non previste in fase di progettazione",
+    "Lavorazioni di assemblaggio e post-produzione (quotate a parte se richieste)",
+    "Materiali aggiuntivi richiesti dal cliente (etichette, inserti metallici forniti dal cliente, ecc.)"
+  ]
+}

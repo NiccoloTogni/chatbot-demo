@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "descrizione": "Costi indicativi di realizzazione stampi per iniezione plastica. Costi una-tantum, separati dal costo pezzo seriale. Includono progettazione, lavorazioni meccaniche, montaggio, prove e collaudo. Non includono modifiche post-collaudo (preventivate a parte).",
+    "valuta": "EUR",
+    "note": "Range indicativi. La cifra esatta dipende da: numero di slide e movimenti, qualità superficiale richiesta, tipo di acciaio, dimensione effettiva del pezzo, vita utile attesa."
+  },
+  "fasce_costo_stampo": {
+    "semplice_piccolo": {
+      "descrizione": "Complessità semplice, dimensione pezzo < 100mm",
+      "esempi_pezzi": ["tappi", "piccoli coperchi", "componenti tecnici elementari"],
+      "range_eur": [5000, 12000],
+      "valore_medio": 8000,
+      "tempo_realizzazione_settimane": [4, 8]
+    },
+    "semplice_medio": {
+      "descrizione": "Complessità semplice, dimensione pezzo 100-300mm",
+      "esempi_pezzi": ["contenitori semplici", "coperchi medi", "vassoi"],
+      "range_eur": [10000, 25000],
+      "valore_medio": 16000,
+      "tempo_realizzazione_settimane": [6, 10]
+    },
+    "semplice_grande": {
+      "descrizione": "Complessità semplice, dimensione pezzo > 300mm",
+      "esempi_pezzi": ["contenitori industriali", "casse semplici"],
+      "range_eur": [20000, 45000],
+      "valore_medio": 30000,
+      "tempo_realizzazione_settimane": [8, 14]
+    },
+    "media_piccolo": {
+      "descrizione": "Complessità media, dimensione pezzo < 100mm",
+      "esempi_pezzi": ["componenti tecnici con nervature", "piccole scocche elettronica"],
+      "range_eur": [12000, 28000],
+      "valore_medio": 18000,
+      "tempo_realizzazione_settimane": [6, 10]
+    },
+    "media_medio": {
+      "descrizione": "Complessità media, dimensione pezzo 100-300mm",
+      "esempi_pezzi": ["scocche elettrodomestici", "contenitori con cerniere"],
+      "range_eur": [25000, 55000],
+      "valore_medio": 38000,
+      "tempo_realizzazione_settimane": [8, 14]
+    },
+    "media_grande": {
+      "descrizione": "Complessità media, dimensione pezzo > 300mm",
+      "esempi_pezzi": ["scocche elettrodomestici grandi", "componenti automotive estesi"],
+      "range_eur": [45000, 90000],
+      "valore_medio": 65000,
+      "tempo_realizzazione_settimane": [12, 18]
+    },
+    "complessa_piccolo": {
+      "descrizione": "Complessità alta, dimensione pezzo < 100mm",
+      "esempi_pezzi": ["connettori elettrici con slide", "componenti meccanici di precisione"],
+      "range_eur": [28000, 60000],
+      "valore_medio": 42000,
+      "tempo_realizzazione_settimane": [10, 16]
+    },
+    "complessa_medio": {
+      "descrizione": "Complessità alta, dimensione pezzo 100-300mm",
+      "esempi_pezzi": ["componenti automotive funzionali con sottosquadri", "alloggiamenti pompe"],
+      "range_eur": [55000, 120000],
+      "valore_medio": 82000,
+      "tempo_realizzazione_settimane": [14, 22]
+    },
+    "complessa_grande": {
+      "descrizione": "Complessità alta, dimensione pezzo > 300mm",
+      "esempi_pezzi": ["paraurti automotive con slide multiple", "componenti strutturali con sovrastampaggi"],
+      "range_eur": [90000, 200000],
+      "valore_medio": 140000,
+      "tempo_realizzazione_settimane": [18, 28]
+    }
+  },
+  "moltiplicatori_impronte": {
+    "descrizione": "Lo stampo multi-impronte aumenta il costo ma riduce il costo pezzo unitario. Moltiplicatore sul costo base mono-impronta.",
+    "valori": {
+      "1": 1.00,
+      "2": 1.55,
+      "4": 2.40,
+      "8": 3.80,
+      "16": 5.90
+    },
+    "criterio_scelta": "Aumentare le impronte quando il volume annuo lo giustifica. Soglia indicativa: oltre 50.000 pezzi/anno valutare 2+ impronte, oltre 200.000 valutare 4+ impronte."
+  },
+  "modalita_amortamento": {
+    "descrizione": "Due modalità alternative di gestione costo stampo nel preventivo",
+    "modalita": [
+      {
+        "nome": "Pagamento separato",
+        "descrizione": "Cliente paga lo stampo upfront come voce a sé. Costo pezzo seriale 'nudo' (solo materiale + macchina + lavorazioni). Modalità standard per progetti strategici.",
+        "default": true
+      },
+      {
+        "nome": "Ammortizzato sul pezzo",
+        "descrizione": "Costo stampo spalmato su un volume minimo concordato (di solito 100.000 pezzi). Maggiorazione sul costo pezzo. Modalità usata per clienti che preferiscono evitare investimento iniziale.",
+        "default": false,
+        "volume_minimo_pezzi": 100000
+      }
+    ]
+  }
+}

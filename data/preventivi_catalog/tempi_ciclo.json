@@ -1,0 +1,61 @@
+{
+  "_meta": {
+    "descrizione": "Tempi ciclo medi indicativi in secondi per stampaggio a iniezione. Il tempo ciclo è la somma di: tempo di iniezione + raffreddamento + apertura stampo + estrazione + chiusura. Il raffreddamento è dominante e scala con il peso/spessore del pezzo.",
+    "unita": "secondi",
+    "note": "Tempi nominali. Variazioni del ±15% sono normali in base a temperatura stampo, materiale, qualità della macchina."
+  },
+  "matrice_tempi": {
+    "descrizione": "Tempo ciclo per complessità del pezzo × fascia di peso",
+    "complessita": {
+      "semplice": {
+        "descrizione": "Geometrie regolari, nessun sottosquadro, estrazione lineare",
+        "esempi": ["coperchi piatti", "tappi", "vassoi semplici", "componenti monoblocco regolari"],
+        "tempi_per_peso_g": {
+          "0-20": 9,
+          "20-50": 13,
+          "50-100": 19,
+          "100-250": 29,
+          "250-500": 46,
+          "500-1000": 72,
+          "1000-2000": 110
+        }
+      },
+      "media": {
+        "descrizione": "Qualche dettaglio funzionale, eventuali fori o nervature, inserti filettati",
+        "esempi": ["scocche con dettagli", "contenitori con cerniere", "componenti tecnici standard"],
+        "tempi_per_peso_g": {
+          "0-20": 13,
+          "20-50": 19,
+          "50-100": 26,
+          "100-250": 40,
+          "250-500": 62,
+          "500-1000": 92,
+          "1000-2000": 140
+        }
+      },
+      "complessa": {
+        "descrizione": "Sottosquadri, slide laterali, threading, sovrastampaggi, pezzi con tolleranze strette",
+        "esempi": ["componenti automotive funzionali", "alloggiamenti meccanici di precisione", "pezzi con filettature interne"],
+        "tempi_per_peso_g": {
+          "0-20": 19,
+          "20-50": 29,
+          "50-100": 40,
+          "100-250": 58,
+          "250-500": 88,
+          "500-1000": 125,
+          "1000-2000": 180
+        }
+      }
+    }
+  },
+  "fattori_correttivi": {
+    "descrizione": "Moltiplicatori da applicare al tempo base in funzione di condizioni particolari",
+    "fattori": [
+      {"condizione": "Materiale rinforzato fibra vetro", "moltiplicatore": 1.10, "motivo": "raffreddamento più lento per maggiore inerzia termica"},
+      {"condizione": "Spessore parete < 1.2mm", "moltiplicatore": 0.85, "motivo": "raffreddamento più rapido"},
+      {"condizione": "Spessore parete > 4mm", "moltiplicatore": 1.30, "motivo": "raffreddamento dominato dallo spessore"},
+      {"condizione": "Materiale con ritiro elevato (PA, POM)", "moltiplicatore": 1.15, "motivo": "tempo aggiuntivo per stabilizzazione dimensionale"},
+      {"condizione": "Tolleranze critiche (< ±0.05mm)", "moltiplicatore": 1.20, "motivo": "raffreddamento esteso per stabilità dimensionale"}
+    ]
+  }
+}

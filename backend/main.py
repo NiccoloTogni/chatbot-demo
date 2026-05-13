@@ -1,10 +1,10 @@
 """
-Vanilla LLM Demo - Backend FastAPI
+AI Demo - Backend FastAPI
 ====================================
 
 Backend stateless che espone un endpoint per chattare con un LLM "puro"
-tramite Azure OpenAI. Nessun tool, nessuna ricerca web, nessuna memoria
-lato server: tutto lo stato della conversazione vive nel browser e viene
+tramite Azure OpenAI.
+Lato server: tutto lo stato della conversazione vive nel browser e viene
 rispedito ad ogni richiesta.
 
 Scopo didattico: mostrare il comportamento di un Large Language Model
@@ -28,6 +28,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from backend.agent_bilancio import router as agent_router
+from backend.agent_preventivi import router as preventivi_router
 
 # ---------------------------------------------------------------------------
 # Configurazione
@@ -37,8 +38,8 @@ load_dotenv()
 
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "")
 AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
-AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
-AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
+AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-03-01-preview")
+AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5.4")
 
 # Versione preview necessaria per Responses API + vector stores
 AZURE_OPENAI_API_VERSION_RESPONSES = os.getenv(
@@ -81,6 +82,7 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.include_router(agent_router)
+app.include_router(preventivi_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # dietro password, ok per uso didattico

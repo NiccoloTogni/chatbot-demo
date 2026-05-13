@@ -68,6 +68,9 @@ dmypy.json
 .Spotlight-V100
 .Trashes
 
+# Temporary files
+tmp/*
+
 # IDE
 .vscode/
 .idea/

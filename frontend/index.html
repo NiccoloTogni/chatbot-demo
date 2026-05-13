@@ -112,6 +112,17 @@
       color: var(--rag);
     }
 
+    .tab.active[data-mode="preventivi"] {
+      background: rgba(14, 116, 144, 0.15);
+      border-color: #0e7490;
+      color: #22d3ee;
+    }
+
+    /* Modalità preventivi: app più larga */
+    .app.preventivi-mode {
+      max-width: 1200px;
+    }
+
     /* Pannello collassabile */
     .config {
       background: var(--panel);
@@ -638,6 +649,349 @@
     }
 
     .hidden { display: none !important; }
+
+    /* ---- Agente Preventivi ---- */
+    .preventivi-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      gap: 0;
+    }
+
+    .preventivi-split {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .prev-chat-col {
+      flex: 6;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      gap: 8px;
+    }
+
+    .prev-chat {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .prev-composer {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .prev-composer textarea {
+      flex: 1;
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+      min-height: 38px;
+      max-height: 160px;
+    }
+
+    .prev-composer textarea:focus { outline: none; border-color: #0e7490; }
+
+    .prev-send-btn {
+      background: #0e7490;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .prev-send-btn:hover:not(:disabled) { background: #0891b2; }
+    .prev-send-btn:disabled { background: var(--panel-soft); color: var(--muted); cursor: not-allowed; }
+
+    .prev-new-btn {
+      background: var(--panel-soft);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .prev-new-btn:hover { background: var(--border); color: var(--text); }
+
+    /* Colonna requisiti */
+    .prev-req-col {
+      flex: 4;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .req-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .req-panel-header {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .req-progress-bar {
+      height: 6px;
+      background: var(--panel-soft);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .req-progress-fill {
+      height: 100%;
+      background: #0e7490;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .req-progress-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .req-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: var(--panel-soft);
+      font-size: 12px;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+
+    .req-card.filled {
+      background: rgba(14, 116, 144, 0.15);
+      border: 1px solid rgba(14, 116, 144, 0.4);
+    }
+
+    .req-card.filled-just {
+      animation: flash-green 0.6s ease;
+    }
+
+    @keyframes flash-green {
+      0%   { background: rgba(74, 222, 128, 0.25); }
+      100% { background: rgba(14, 116, 144, 0.15); }
+    }
+
+    .req-label { color: var(--muted); white-space: nowrap; }
+    .req-value { color: var(--text); font-weight: 500; text-align: right; word-break: break-all; }
+    .req-empty { color: var(--panel-soft); font-size: 11px; }
+
+    .req-section-title {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .tech-advice-box {
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #fef3c7;
+      line-height: 1.5;
+    }
+
+    .tech-advice-title {
+      font-weight: 600;
+      color: var(--warning);
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .genera-btn {
+      background: #0e7490;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .genera-btn:hover:not(:disabled) { background: #0891b2; }
+    .genera-btn:disabled {
+      background: var(--panel-soft);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    /* Modal preventivo */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .modal-close:hover { background: var(--panel-soft); color: var(--text); }
+
+    .modal-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #22d3ee;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .modal-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-table td:first-child { color: var(--muted); width: 55%; }
+    .modal-table td:last-child { font-weight: 500; text-align: right; }
+
+    .modal-table tr.bold td { font-weight: 700; color: var(--text); }
+    .modal-table tr.final td {
+      font-weight: 700;
+      background: rgba(14, 116, 144, 0.2);
+      color: #22d3ee;
+      font-size: 14px;
+    }
+    .modal-table tr.negative td:last-child { color: #f87171; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .modal-download-btn {
+      background: #0e7490;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .modal-download-btn:hover { background: #0891b2; }
+
+    .modal-cancel-btn {
+      background: var(--panel-soft);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .modal-cancel-btn:hover { background: var(--border); color: var(--text); }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--panel-soft);
+      border-top-color: #0e7490;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
   </style>
 </head>
 <body>
@@ -662,8 +1016,9 @@
         <span class="badge">Demo Didattica</span>
       </h1>
       <p>
-        Tre modalità a confronto: <strong>Vanilla</strong> (LLM puro), <strong>Assistente RAG</strong>
-        (knowledge base aziendale con citazioni), <strong>Agente Bilancio</strong> (workflow AI multi-step su PDF).
+        Quattro modalità: <strong>Vanilla</strong> (LLM puro), <strong>Assistente RAG</strong>
+        (knowledge base aziendale), <strong>Agente Bilancio</strong> (workflow su PDF),
+        <strong>Agente Preventivi</strong> (conversazione + costificazione).
       </p>
     </header>
 
@@ -672,6 +1027,7 @@
       <button class="tab active" data-mode="vanilla" id="tab-vanilla">🤖 Vanilla LLM</button>
       <button class="tab" data-mode="rag" id="tab-rag">🔍 Assistente RAG</button>
       <button class="tab" data-mode="agent" id="tab-agent">📊 Agente Bilancio</button>
+      <button class="tab" data-mode="preventivi" id="tab-preventivi">📋 Agente Preventivi</button>
     </div>
 
     <!-- Indicatore modalità RAG -->
@@ -735,6 +1091,64 @@
         <button class="download-btn" id="download-btn">📥 Scarica report PDF</button>
       </div>
 
+    </div>
+
+    <!-- Pannello Agente Preventivi -->
+    <div id="preventivi-panel" class="preventivi-panel hidden">
+      <div class="preventivi-split">
+
+        <!-- Colonna sinistra: chat -->
+        <div class="prev-chat-col">
+          <div id="prev-chat" class="prev-chat"></div>
+          <div class="prev-composer">
+            <textarea id="prev-input" rows="1"
+              placeholder="Scrivi qui la tua richiesta… (Invio per inviare)"></textarea>
+            <button class="prev-new-btn" id="prev-new" title="Nuovo preventivo">↺</button>
+            <button class="prev-send-btn" id="prev-send" disabled>Invia</button>
+          </div>
+        </div>
+
+        <!-- Colonna destra: requisiti -->
+        <div class="prev-req-col">
+          <div class="req-panel">
+            <div class="req-panel-header">Requisiti raccolti</div>
+            <div class="req-progress-bar">
+              <div class="req-progress-fill" id="req-progress-fill" style="width:0%"></div>
+            </div>
+            <div class="req-progress-label" id="req-progress-label">0 / 6 obbligatori</div>
+            <div id="req-cards"></div>
+          </div>
+
+          <div id="tech-advice-box" class="tech-advice-box hidden">
+            <div class="tech-advice-title">💡 Suggerimento tecnico</div>
+            <div id="tech-advice-text"></div>
+          </div>
+
+          <button class="genera-btn" id="genera-btn" disabled>▶ Genera preventivo</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal anteprima preventivo -->
+    <div id="preventivo-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title" id="modal-title">Anteprima offerta</div>
+          <button class="modal-close" id="modal-close">✕</button>
+        </div>
+        <div id="modal-body"></div>
+        <div class="modal-actions">
+          <button class="modal-cancel-btn" id="modal-cancel">Chiudi</button>
+          <a id="modal-download-link" href="#" class="modal-download-btn">📥 Scarica PDF completo</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading overlay generazione preventivo -->
+    <div id="prev-loading" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+      <div>Calcolo e generazione PDF in corso…</div>
     </div>
 
     <div id="chat" class="chat">
@@ -876,6 +1290,25 @@
       stepList: document.getElementById('step-list'),
       agentDownload: document.getElementById('agent-download'),
       downloadBtn: document.getElementById('download-btn'),
+      // Preventivi panel
+      preventiviPanel: document.getElementById('preventivi-panel'),
+      prevChat: document.getElementById('prev-chat'),
+      prevInput: document.getElementById('prev-input'),
+      prevSend: document.getElementById('prev-send'),
+      prevNew: document.getElementById('prev-new'),
+      reqProgressFill: document.getElementById('req-progress-fill'),
+      reqProgressLabel: document.getElementById('req-progress-label'),
+      reqCards: document.getElementById('req-cards'),
+      techAdviceBox: document.getElementById('tech-advice-box'),
+      techAdviceText: document.getElementById('tech-advice-text'),
+      generaBtn: document.getElementById('genera-btn'),
+      preventivoModal: document.getElementById('preventivo-modal'),
+      modalTitle: document.getElementById('modal-title'),
+      modalBody: document.getElementById('modal-body'),
+      modalClose: document.getElementById('modal-close'),
+      modalCancel: document.getElementById('modal-cancel'),
+      modalDownloadLink: document.getElementById('modal-download-link'),
+      prevLoading: document.getElementById('prev-loading'),
     };
 
     // Prompts cached after loadConfig — used to update the panel on tab switch
@@ -1073,25 +1506,29 @@
     }
 
     function updateTabUI() {
-      const isVanilla = state.mode === 'vanilla';
-      const isRag     = state.mode === 'rag';
-      const isAgent   = state.mode === 'agent';
+      const isVanilla    = state.mode === 'vanilla';
+      const isRag        = state.mode === 'rag';
+      const isAgent      = state.mode === 'agent';
+      const isPreventivi = state.mode === 'preventivi';
+      const isChatMode   = isVanilla || isRag;
 
-      els.tabVanilla.classList.toggle('active', isVanilla);
-      els.tabRag.classList.toggle('active', isRag);
-      els.tabAgent.classList.toggle('active', isAgent);
+      document.getElementById('tab-vanilla').classList.toggle('active', isVanilla);
+      document.getElementById('tab-rag').classList.toggle('active', isRag);
+      document.getElementById('tab-agent').classList.toggle('active', isAgent);
+      document.getElementById('tab-preventivi').classList.toggle('active', isPreventivi);
 
-      // Aree esclusive per chat vs agente
-      els.chat.classList.toggle('hidden', isAgent);
-      els.composer.classList.toggle('hidden', isAgent);
-      els.configPanel.classList.toggle('hidden', isAgent);
+      els.chat.classList.toggle('hidden', isAgent || isPreventivi);
+      els.composer.classList.toggle('hidden', isAgent || isPreventivi);
+      els.configPanel.classList.toggle('hidden', isAgent || isPreventivi);
       els.agentPanel.classList.toggle('hidden', !isAgent);
+      els.preventiviPanel.classList.toggle('hidden', !isPreventivi);
 
-      // RAG indicator solo nella tab RAG
+      // Larghezza allargata per il pannello split-screen
+      els.app.classList.toggle('preventivi-mode', isPreventivi);
+
       els.ragIndicator.classList.toggle('hidden', !isRag);
 
-      // Prompt e esempi (solo per le tab chat)
-      if (!isAgent) {
+      if (isChatMode) {
         els.cfgPrompt.textContent = prompts[state.mode] || '—';
         els.examplesVanilla.classList.toggle('hidden', isRag);
         els.examplesRag.classList.toggle('hidden', !isRag);
@@ -1278,6 +1715,318 @@
     }
 
     // ========================================================================
+    // Agente Preventivi
+    // ========================================================================
+
+    const REQ_FIELDS_REQUIRED = [
+      { key: 'tipologia_pezzo',   label: 'Tipologia pezzo' },
+      { key: 'materiale_codice',  label: 'Materiale' },
+      { key: 'peso_pezzo_g',      label: 'Peso unitario (g)' },
+      { key: 'dimensione_max_mm', label: 'Dimensione max (mm)' },
+      { key: 'complessita',       label: 'Complessità' },
+      { key: 'volume_annuo_pz',   label: 'Volume annuo (pz)' },
+    ];
+    const REQ_FIELDS_OPTIONAL = [
+      { key: 'tolleranze',              label: 'Tolleranze' },
+      { key: 'finitura_estetica',       label: 'Finitura estetica' },
+      { key: 'lavorazioni_post',        label: 'Lavorazioni post' },
+      { key: 'urgenza_giorni',          label: 'Urgenza (giorni)' },
+      { key: 'certificazioni_richieste', label: 'Certificazioni' },
+      { key: 'note_cliente',            label: 'Note cliente' },
+    ];
+
+    const preventiviState = {
+      sessionId: null,
+      messages: [],
+      requirements: {},
+      readyToGenerate: false,
+      technicalAdvice: null,
+      preventivoData: null,
+      prevBusy: false,
+    };
+
+    function renderPrevChat() {
+      els.prevChat.innerHTML = '';
+      if (preventiviState.messages.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = '<h2>Agente Preventivi</h2><p>Avvio in corso…</p>';
+        els.prevChat.appendChild(empty);
+        return;
+      }
+      for (const msg of preventiviState.messages) {
+        const wrap = document.createElement('div');
+        wrap.className = `message ${msg.role}`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        if (msg.role === 'assistant') {
+          bubble.classList.add('md');
+          bubble.innerHTML = marked.parse(msg.content);
+        } else {
+          bubble.textContent = msg.content;
+        }
+        wrap.appendChild(bubble);
+        els.prevChat.appendChild(wrap);
+      }
+      els.prevChat.scrollTop = els.prevChat.scrollHeight;
+    }
+
+    function renderReqCards() {
+      const req = preventiviState.requirements;
+      const filled = REQ_FIELDS_REQUIRED.filter(f => req[f.key] != null).length;
+      const pct = Math.round((filled / REQ_FIELDS_REQUIRED.length) * 100);
+      els.reqProgressFill.style.width = pct + '%';
+      els.reqProgressLabel.textContent = `${filled} / ${REQ_FIELDS_REQUIRED.length} obbligatori`;
+
+      els.reqCards.innerHTML = '';
+
+      // Required
+      const secReq = document.createElement('div');
+      secReq.className = 'req-section-title';
+      secReq.textContent = 'Obbligatori';
+      els.reqCards.appendChild(secReq);
+
+      for (const f of REQ_FIELDS_REQUIRED) {
+        const val = req[f.key];
+        const card = document.createElement('div');
+        card.className = 'req-card' + (val != null ? ' filled' : '');
+        card.innerHTML = `<span class="req-label">${f.label}</span>
+          ${val != null
+            ? `<span class="req-value">${val}</span>`
+            : `<span class="req-empty">—</span>`}`;
+        els.reqCards.appendChild(card);
+      }
+
+      // Optional
+      const hasOptional = REQ_FIELDS_OPTIONAL.some(f => req[f.key] != null);
+      const secOpt = document.createElement('div');
+      secOpt.className = 'req-section-title';
+      secOpt.style.marginTop = '8px';
+      secOpt.textContent = 'Opzionali';
+      els.reqCards.appendChild(secOpt);
+
+      for (const f of REQ_FIELDS_OPTIONAL) {
+        const val = req[f.key];
+        if (!hasOptional && val == null) continue; // nascondi se tutti vuoti
+        const card = document.createElement('div');
+        card.className = 'req-card' + (val != null ? ' filled' : '');
+        card.innerHTML = `<span class="req-label">${f.label}</span>
+          ${val != null
+            ? `<span class="req-value">${val}</span>`
+            : `<span class="req-empty">—</span>`}`;
+        els.reqCards.appendChild(card);
+      }
+    }
+
+    function updateTechAdvice(advice) {
+      if (advice) {
+        els.techAdviceText.textContent = advice;
+        els.techAdviceBox.classList.remove('hidden');
+      }
+    }
+
+    async function startPreventiviSession() {
+      try {
+        const data = await apiCall('/api/preventivi/start', { method: 'POST' });
+        preventiviState.sessionId = data.session_id;
+        preventiviState.messages = [{ role: 'assistant', content: data.opening_message }];
+        preventiviState.requirements = {};
+        preventiviState.readyToGenerate = false;
+        preventiviState.technicalAdvice = null;
+        preventiviState.preventivoData = null;
+        els.prevSend.disabled = false;
+        els.generaBtn.disabled = true;
+        els.techAdviceBox.classList.add('hidden');
+        renderPrevChat();
+        renderReqCards();
+      } catch (e) {
+        preventiviState.messages = [{ role: 'assistant', content: `Errore avvio sessione: ${e.message}` }];
+        renderPrevChat();
+      }
+    }
+
+    async function sendPrevMessage() {
+      if (preventiviState.prevBusy || !preventiviState.sessionId) return;
+      const text = els.prevInput.value.trim();
+      if (!text) return;
+
+      preventiviState.prevBusy = true;
+      els.prevSend.disabled = true;
+      els.prevInput.value = '';
+      prevAutoResize();
+
+      preventiviState.messages.push({ role: 'user', content: text });
+      renderPrevChat();
+
+      const typing = document.createElement('div');
+      typing.className = 'typing';
+      typing.textContent = 'L\'agente sta elaborando…';
+      els.prevChat.appendChild(typing);
+      els.prevChat.scrollTop = els.prevChat.scrollHeight;
+
+      try {
+        const resp = await apiCall('/api/preventivi/message', {
+          method: 'POST',
+          body: JSON.stringify({ session_id: preventiviState.sessionId, user_message: text }),
+        });
+        preventiviState.messages.push({ role: 'assistant', content: resp.reply });
+        preventiviState.requirements = resp.requirements || {};
+        preventiviState.readyToGenerate = resp.ready_to_generate;
+        preventiviState.technicalAdvice = resp.technical_advice;
+
+        if (resp.technical_advice) updateTechAdvice(resp.technical_advice);
+        els.generaBtn.disabled = !resp.ready_to_generate;
+
+        const animKeys = Object.keys(resp.requirements || {}).filter(k =>
+          resp.requirements[k] != null
+        );
+        renderReqCards();
+        // Animazione flash sui campi appena valorizzati
+        animKeys.forEach(k => {
+          const cards = els.reqCards.querySelectorAll('.req-card.filled');
+          cards.forEach(c => {
+            if (c.querySelector('.req-label')?.textContent ===
+                ([...REQ_FIELDS_REQUIRED, ...REQ_FIELDS_OPTIONAL].find(f => f.key === k)?.label || '')) {
+              c.classList.add('filled-just');
+              setTimeout(() => c.classList.remove('filled-just'), 700);
+            }
+          });
+        });
+      } catch (e) {
+        if (e.message.includes('scaduta') || e.message.includes('404')) {
+          preventiviState.messages.push({ role: 'assistant', content: 'Sessione scaduta. Avvio nuova sessione…' });
+          renderPrevChat();
+          await startPreventiviSession();
+          return;
+        }
+        preventiviState.messages.push({ role: 'assistant', content: `Errore: ${e.message}` });
+      } finally {
+        typing.remove();
+        preventiviState.prevBusy = false;
+        els.prevSend.disabled = false;
+        renderPrevChat();
+      }
+    }
+
+    async function generatePreventivo() {
+      if (!preventiviState.sessionId) return;
+      els.prevLoading.classList.remove('hidden');
+      els.generaBtn.disabled = true;
+
+      try {
+        const resp = await apiCall('/api/preventivi/generate', {
+          method: 'POST',
+          body: JSON.stringify({ session_id: preventiviState.sessionId }),
+        });
+        preventiviState.preventivoData = resp.preventivo_data;
+        renderPreventivoModal(resp.preventivo_data, resp.download_url);
+        els.preventivoModal.classList.remove('hidden');
+      } catch (e) {
+        preventiviState.messages.push({ role: 'assistant', content: `Errore generazione: ${e.message}` });
+        renderPrevChat();
+        els.generaBtn.disabled = false;
+      } finally {
+        els.prevLoading.classList.add('hidden');
+      }
+    }
+
+    function renderPreventivoModal(data, downloadUrl) {
+      const req = data.requisiti || {};
+      const cp = data.costo_pezzo || {};
+      const stampo = data.stampo || {};
+
+      els.modalTitle.textContent = `Anteprima offerta — ${req.tipologia_pezzo || '—'}`;
+      els.modalDownloadLink.href = downloadUrl;
+
+      let html = '';
+
+      // Specifiche
+      html += `<div class="modal-section-title">Specifiche tecniche</div>`;
+      html += `<table class="modal-table">`;
+      const specRows = [
+        ['Tipologia pezzo', req.tipologia_pezzo],
+        ['Materiale', req.materiale_codice],
+        ['Peso unitario', req.peso_pezzo_g != null ? `${req.peso_pezzo_g} g` : null],
+        ['Dimensione max', req.dimensione_max_mm != null ? `${req.dimensione_max_mm} mm` : null],
+        ['Complessità', req.complessita],
+        ['Volume annuo', req.volume_annuo_pz != null ? `${Number(req.volume_annuo_pz).toLocaleString('it')} pz/anno` : null],
+        ['Certificazioni', req.certificazioni_richieste],
+      ];
+      for (const [label, val] of specRows) {
+        if (val) html += `<tr><td>${label}</td><td>${val}</td></tr>`;
+      }
+      html += `</table>`;
+
+      // Costificazione
+      html += `<div class="modal-section-title" style="margin-top:12px">Costificazione pezzo unitario</div>`;
+      html += `<table class="modal-table">`;
+      html += `<tr><td>Costo materiale</td><td>€ ${(cp.costo_materiale_eur||0).toFixed(4)}</td></tr>`;
+      html += `<tr><td>Scarto produttivo (5%)</td><td>€ ${(cp.scarto_eur||0).toFixed(4)}</td></tr>`;
+      html += `<tr><td>Costo lavorazione macchina</td><td>€ ${(cp.costo_macchina_eur||0).toFixed(4)}</td></tr>`;
+      html += `<tr class="bold"><td>Costo industriale</td><td>€ ${(cp.costo_industriale_eur||0).toFixed(4)}</td></tr>`;
+      html += `<tr><td>Margine commerciale (${Math.round((cp.markup_pct||0.22)*100)}%)</td><td>€ ${(cp.markup_eur||0).toFixed(4)}</td></tr>`;
+      html += `<tr class="bold"><td>Subtotale</td><td>€ ${(cp.subtotale_eur||0).toFixed(4)}</td></tr>`;
+      const sv = cp.sconto_volume || {};
+      if ((sv.pct||0) > 0) {
+        html += `<tr class="negative"><td>Sconto volume (${sv.fascia || ''} — ${Math.round((sv.pct||0)*100)}%)</td><td>€ ${(sv.eur||0).toFixed(4)}</td></tr>`;
+      }
+      for (const m of (cp.maggiorazioni || [])) {
+        html += `<tr><td>${m.nome} (+${Math.round(m.pct*100)}%)</td><td>€ ${m.eur.toFixed(4)}</td></tr>`;
+      }
+      html += `<tr class="final"><td>Prezzo unitario di vendita</td><td>€ ${(cp.prezzo_unitario_finale_eur||0).toFixed(4)}</td></tr>`;
+      html += `</table>`;
+
+      // Stampo
+      const rang = stampo.range_eur || [0, 0];
+      html += `<div class="modal-section-title" style="margin-top:12px">Costo stampo</div>`;
+      html += `<table class="modal-table">`;
+      html += `<tr><td>Categoria</td><td>${stampo.categoria || '—'}</td></tr>`;
+      html += `<tr><td>Range stimato</td><td>€ ${rang[0].toLocaleString('it')} — € ${rang[1].toLocaleString('it')}</td></tr>`;
+      html += `<tr><td>Valore medio</td><td>€ ${(stampo.valore_medio_eur||0).toLocaleString('it')}</td></tr>`;
+      html += `<tr><td>Tempo realizzazione</td><td>${stampo.tempo_realizzazione_settimane || '—'} settimane</td></tr>`;
+      html += `</table>`;
+
+      // Ricavi
+      html += `<div class="modal-section-title" style="margin-top:12px">Ricavi annui stimati</div>`;
+      html += `<table class="modal-table">`;
+      html += `<tr class="bold"><td>Ricavi annui</td><td>€ ${(data.ricavi_annui_stimati_eur||0).toLocaleString('it', {minimumFractionDigits:2})}</td></tr>`;
+      html += `</table>`;
+
+      // Suggerimenti tecnici
+      if (data.suggerimenti_tecnici && data.suggerimenti_tecnici.length > 0) {
+        html += `<div class="modal-section-title" style="margin-top:12px">Suggerimenti tecnici emersi</div>`;
+        for (const s of data.suggerimenti_tecnici) {
+          html += `<div class="tech-advice-box" style="margin-bottom:6px">${s}</div>`;
+        }
+      }
+
+      els.modalBody.innerHTML = html;
+    }
+
+    function setupPreventiviPanel() {
+      els.prevSend.addEventListener('click', sendPrevMessage);
+      els.prevInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPrevMessage(); }
+      });
+      els.prevInput.addEventListener('input', prevAutoResize);
+      els.prevNew.addEventListener('click', () => {
+        preventiviState.sessionId = null;
+        preventiviState.messages = [];
+        els.techAdviceBox.classList.add('hidden');
+        els.generaBtn.disabled = true;
+        startPreventiviSession();
+      });
+      els.generaBtn.addEventListener('click', generatePreventivo);
+      els.modalClose.addEventListener('click', () => els.preventivoModal.classList.add('hidden'));
+      els.modalCancel.addEventListener('click', () => els.preventivoModal.classList.add('hidden'));
+    }
+
+    function prevAutoResize() {
+      els.prevInput.style.height = 'auto';
+      els.prevInput.style.height = Math.min(els.prevInput.scrollHeight, 160) + 'px';
+    }
+
+    // ========================================================================
     // Event listeners
     // ========================================================================
 
@@ -1312,6 +2061,10 @@
         updateTabUI();
         hideError();
         renderChat();
+        // Avvia sessione preventivi al primo accesso alla tab
+        if (newMode === 'preventivi' && !preventiviState.sessionId) {
+          startPreventiviSession();
+        }
       });
     });
 
@@ -1353,6 +2106,7 @@
     (async function init() {
       loadMessagesFromStorage();
       setupAgentPanel();
+      setupPreventiviPanel();
       try {
         await loadConfig();
         updateTabUI();

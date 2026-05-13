@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "descrizione": "Parco presse ad iniezione disponibile. Costi orari pieni: includono ammortamento macchina, energia, manutenzione ordinaria, operatore. Non includono materiale.",
+    "ultima_revisione": "2026-01-15",
+    "valuta": "EUR",
+    "unita_costo": "ora"
+  },
+  "macchine": [
+    {
+      "codice": "PR-080",
+      "tonnellaggio": 80,
+      "costo_orario": 45,
+      "peso_pezzo_range_g": [1, 60],
+      "dimensione_max_pezzo_mm": 150,
+      "applicazioni_tipiche": ["pezzi piccoli", "componenti di precisione", "tappi e chiusure"],
+      "note": "Macchina ideale per piccoli pezzi tecnici. Massima precisione, minimi consumi."
+    },
+    {
+      "codice": "PR-150",
+      "tonnellaggio": 150,
+      "costo_orario": 65,
+      "peso_pezzo_range_g": [30, 180],
+      "dimensione_max_pezzo_mm": 250,
+      "applicazioni_tipiche": ["componenti piccolo-medi", "elettronica consumer", "automotive piccoli"],
+      "note": "La taglia più versatile della gamma. Copre la maggior parte delle commesse standard."
+    },
+    {
+      "codice": "PR-250",
+      "tonnellaggio": 250,
+      "costo_orario": 85,
+      "peso_pezzo_range_g": [120, 400],
+      "dimensione_max_pezzo_mm": 380,
+      "applicazioni_tipiche": ["scocche elettrodomestici piccoli", "componenti automotive sotto-cofano", "casalinghi medi"],
+      "note": "Adatta per pezzi medi con buona produttività."
+    },
+    {
+      "codice": "PR-400",
+      "tonnellaggio": 400,
+      "costo_orario": 120,
+      "peso_pezzo_range_g": [300, 800],
+      "dimensione_max_pezzo_mm": 550,
+      "applicazioni_tipiche": ["scocche elettrodomestici grandi", "contenitori industriali", "componenti automotive estesi"],
+      "note": "Per pezzi grandi o multi-impronte di pezzi medi."
+    },
+    {
+      "codice": "PR-650",
+      "tonnellaggio": 650,
+      "costo_orario": 180,
+      "peso_pezzo_range_g": [700, 1800],
+      "dimensione_max_pezzo_mm": 850,
+      "applicazioni_tipiche": ["paraurti automotive", "casse e contenitori grandi", "componenti voluminosi"],
+      "note": "Macchina di punta. Maggiore consumo energetico — privilegiare solo per pezzi che la richiedono effettivamente."
+    }
+  ],
+  "regole_selezione": {
+    "descrizione": "Logica di selezione automatica della macchina ottimale",
+    "criteri": [
+      "Scegliere la macchina più piccola che possa contenere il pezzo (dimensione massima)",
+      "Verificare che il peso del pezzo (incluso eventuale multi-impronta) rientri nel range",
+      "Per materiali rinforzati (es. PA66-GF30) considerare maggiorazione 10% sul tonnellaggio richiesto",
+      "Per pezzi con pareti sottili (<1.2mm) considerare maggiorazione 15% sul tonnellaggio"
+    ]
+  }
+}
