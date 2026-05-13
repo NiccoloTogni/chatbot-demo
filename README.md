@@ -14,14 +14,22 @@ stateless — riceve l'intera cronologia ad ogni chiamata.
 
 ```
 .
-├── app.py                 # entry point per App Service (importa backend.main)
-├── requirements.txt       # dipendenze (richiesto in root da App Service)
+├── app.py                       # entry point per App Service (importa backend.main)
+├── requirements.txt             # dipendenze (richiesto in root da App Service)
 ├── backend/
-│   ├── main.py            # ~200 righe FastAPI
-│   ├── requirements.txt   # copia per dev locale
-│   └── .env.example       # variabili da copiare in .env
+│   ├── main.py                  # FastAPI: endpoint /api/chat, /api/config
+│   ├── agent_bilancio.py        # Agente Bilancio: 4-step workflow su PDF
+│   ├── agent_preventivi.py      # Agente Preventivi: conversazione + PDF preventivo
+│   ├── requirements.txt         # copia per dev locale
+│   └── .env.example             # variabili da copiare in .env
+├── data/
+│   ├── knowledge_base/          # PDF per il vector store RAG
+│   └── preventivi_catalog/      # JSON catalogo materiali, macchine, pricing
 ├── frontend/
-│   └── index.html         # SPA single-file (HTML+CSS+JS)
+│   └── index.html               # SPA single-file (HTML+CSS+JS)
+├── scripts/
+│   ├── setup_vector_store.py    # crea vector store RAG (rossi-knowledge-base)
+│   └── setup_preventivi_kb.py   # crea vector store preventivi (rossi-preventivi-kb)
 └── README.md
 ```
 
@@ -98,7 +106,10 @@ Una volta creata l'App Service:
 | `AZURE_OPENAI_ENDPOINT` | `https://<nome-risorsa>.openai.azure.com/` |
 | `AZURE_OPENAI_API_KEY` | la tua API key Azure OpenAI |
 | `AZURE_OPENAI_API_VERSION` | `2024-08-01-preview` |
+| `AZURE_OPENAI_API_VERSION_RESPONSES` | `2025-04-01-preview` (per RAG e Agente Preventivi) |
 | `AZURE_OPENAI_DEPLOYMENT` | nome del deployment (es. `gpt-4o-mini`) |
+| `AZURE_VECTOR_STORE_ID` | ID del vector store RAG (da `setup_vector_store.py`) |
+| `AZURE_PREVENTIVI_VECTOR_STORE_ID` | ID del vector store preventivi (da `setup_preventivi_kb.py`) |
 | `ACCESS_TOKEN` | password per gli studenti (es. `corso-rossi-2026`) |
 | `MAX_OUTPUT_TOKENS` | `800` |
 | `MAX_HISTORY_MESSAGES` | `30` |

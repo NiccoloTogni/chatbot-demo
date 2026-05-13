@@ -99,18 +99,21 @@ Quando hai tutti i requisiti obbligatori raccolti, segnali che sei pronto a gene
 ### Obbligatori (necessari per costificare)
 
 - tipologia_pezzo: Descrizione breve del pezzo (cosa è, a cosa serve). Es: "coperchio scatola elettronica"
-- materiale_codice: Codice del materiale plastico. Vedi catalogo materiali. Se l'utente è vago proponi opzioni in base all'applicazione
-- peso_pezzo_g: Peso unitario stimato in grammi. Se l'utente non lo sa, chiedi dimensioni e proponi una stima
-- dimensione_max_mm: Lato maggiore del pezzo in mm. Serve per scelta macchina
-- complessita: "semplice" / "media" / "complessa"
-- volume_annuo_pz: Volume produttivo annuo in pezzi
+- materiale_codice: Codice del materiale plastico. DEVE essere uno dei codici esatti del catalogo qui sotto. Se l'utente è vago proponi opzioni in base all'applicazione
+
+  Codici validi (usare ESATTAMENTE questi, nessun altro):
+  PP, PP-COPO, PE-HD, PS-HI, ABS, PA6, PA66, PA66-GF30, POM, PC, PBT, TPE-S
+- peso_pezzo_g: Peso unitario in grammi. Numero decimale puro, senza unità (es. 65 oppure 12.5, NON "65g")
+- dimensione_max_mm: Lato maggiore del pezzo in mm. Numero intero puro, senza unità (es. 180, NON "180mm")
+- complessita: Esattamente una di queste tre stringhe: "semplice" / "media" / "complessa"
+- volume_annuo_pz: Volume annuo in pezzi. Numero intero puro, senza punti né virgole né unità (es. 80000, NON "80.000" e NON "80000 pz")
 
 ### Opzionali (utili ma non bloccanti)
 
 - tolleranze: "standard" / "strette" (sotto ±0.1mm)
 - finitura_estetica: "tecnica" / "estetica" / "alta estetica"
 - lavorazioni_post: Assemblaggio, decorazione, sovrastampaggio, etc.
-- urgenza_giorni: Giorni per prima consegna (se urgente)
+- urgenza_giorni: Giorni per prima consegna (se urgente). Numero intero puro (es. 30, NON "30 giorni")
 - certificazioni_richieste: ISO 13485 (medicale), IATF 16949 (automotive), uso alimentare, ecc.
 - note_cliente: Qualsiasi info aggiuntiva fornita dal cliente
 
@@ -364,14 +367,28 @@ def _apply_cycle_corrections(
 
 
 def calcola_preventivo(requirements: dict) -> dict:
-    peso_g = float(requirements["peso_pezzo_g"])
-    dimensione_mm = float(requirements["dimensione_max_mm"])
-    materiale_codice = str(requirements["materiale_codice"])
-    complessita = str(requirements["complessita"])
-    volume_annuo = int(requirements["volume_annuo_pz"])
+    try:
+        peso_g = float(str(requirements["peso_pezzo_g"]).replace(",", ".").split()[0].rstrip("gG"))
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"peso_pezzo_g non valido: '{requirements['peso_pezzo_g']}' — atteso numero (es. 65)") from e
+    try:
+        dimensione_mm = float(str(requirements["dimensione_max_mm"]).replace(",", ".").split()[0].rstrip("mM"))
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"dimensione_max_mm non valida: '{requirements['dimensione_max_mm']}' — atteso numero (es. 180)") from e
+    try:
+        volume_annuo = int(str(requirements["volume_annuo_pz"]).replace(".", "").replace(",", "").split()[0])
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"volume_annuo_pz non valido: '{requirements['volume_annuo_pz']}' — atteso numero intero (es. 80000)") from e
+
+    materiale_codice = str(requirements["materiale_codice"]).strip()
+    complessita = str(requirements["complessita"]).strip().lower()
     tolleranze = requirements.get("tolleranze")
     certificazioni = requirements.get("certificazioni_richieste") or ""
-    urgenza_giorni = requirements.get("urgenza_giorni")
+    raw_urgenza = requirements.get("urgenza_giorni")
+    try:
+        urgenza_giorni = int(str(raw_urgenza).split()[0]) if raw_urgenza is not None else None
+    except (ValueError, TypeError):
+        urgenza_giorni = None
 
     # 6.1 Materiale
     mat = _find_material(materiale_codice)
@@ -759,7 +776,7 @@ def _build_pdf(session_id: str, preventivo_data: dict) -> str:
     ricavi = preventivo_data.get("ricavi_annui_stimati_eur", 0)
     story.append(Paragraph(
         f"<b>Ricavi annui stimati:</b> € {ricavi:,.2f}  "
-        f"({req.get('volume_annuo_pz', 0):,} pz × € {cp.get('prezzo_unitario_finale_eur', 0):.4f}/pz)",
+        f"({int(req.get('volume_annuo_pz', 0)):,} pz × € {cp.get('prezzo_unitario_finale_eur', 0):.4f}/pz)",
         s_body,
     ))
     story.append(PageBreak())
@@ -909,6 +926,18 @@ def generate(body: GenerateRequest):
         raise HTTPException(
             status_code=400,
             detail=f"Requisiti obbligatori mancanti: {', '.join(missing)}",
+        )
+
+    # Valida materiale prima di procedere
+    mat_codice = session["requirements"].get("materiale_codice", "")
+    valid_codes = [m["codice"] for m in MATERIALI.get("materiali", [])]
+    if mat_codice not in valid_codes:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Codice materiale '{mat_codice}' non valido. "
+                f"Codici accettati: {', '.join(valid_codes)}"
+            ),
         )
 
     client = _get_client()
